@@ -1,0 +1,278 @@
+
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
+
+import static java.lang.System.*;
+
+/*
+ *  This is the LCR game
+ *  See: https://en.wikipedia.org/wiki/LCR_(dice_game)
+ */
+public class LCRGame {
+
+    public static void main(String[] args) {
+        new LCRGame().program();
+    }
+
+    final Scanner sc = new Scanner(in);  // The only allowed variables outside methods.
+    final Random rand = new Random();
+    //IO
+
+
+    void program() {
+        test();        // < -------------------- Uncomment to run tests
+
+        boolean aborted = false;            // Game aborted?
+
+        int i = 0; //index på person som kastar tärning,dvs vem som kastar
+ 
+        String Status = "r";
+        Player[] player = getPlayers();// tvungen att deklara players igen;
+        int length = player.length;
+        String Roll = "r";
+        gameStartMsg();
+
+
+
+        while (Status.equals("r")) {
+
+            CheckWinner(player);
+            out.print("Status:");
+            antalchips(player);
+            out.println("");
+            out.println("Player is " + player[i].name);
+            out.println(" r = roll, q = quit;");
+            Status = sc.nextLine();
+            while (!(Status.equals("r")) && !(Status.equals("q"))) {
+                out.println("r = roll, q = quit;");
+                Status = sc.nextLine();
+            }
+
+            if (Status.equals("q")) {break;}
+            if ("r".equals(Status)){
+
+
+                //  int[] dice = {rollDice(), rollDice(), rollDice()}
+
+                int[] dice= new int[DiceLength(player,i)];
+                out.println(dice.length);
+                for(int index=0; index < dice.length;index++){
+                dice[index]= rollDice();}
+                out.println(player[i].name + " har slått");
+                out.println(Arrays.toString(TransDice(dice)));
+                DiceResult(i,dice,player);
+
+                /*for (int index = 0; index < dice.length; index++) {
+
+                    if (dice[index] == 1) {    // ett chip åt vänster
+                        if (i == 0) {
+                            player[0].nChips = player[0].nChips - 1;
+                            player[player.length - 1].nChips = player[player.length - 1].nChips + 1;
+                        } else {
+                            player[i].nChips = player[i].nChips - 1;
+                            player[i - 1].nChips = player[i - 1].nChips + 1;
+                        }
+                    }
+                    if (dice[index] == 2) {
+                        player[i].nChips = player[i].nChips - 1;
+                    } // förlorar ett chip
+
+                    if (dice[index] == 3) { // ett chip åt höger
+                        if (i == player.length - 1) {
+                            player[0].nChips = player[0].nChips + 1;
+                            player[player.length - 1].nChips = player[player.length - 1].nChips - 1;
+                        } else {
+                            player[i].nChips = player[i].nChips - 1;
+                            player[i + 1].nChips = player[i + 1].nChips + 1;
+                        }
+                    }
+
+
+                }*/
+
+                i = i + 1;
+                if (i >= player.length) {
+                    i = 0;
+                } // börjar om tärning när vi når sista spelaren
+
+
+            }
+
+            }
+    }
+
+
+    //Player[] players = ...;
+    //Player actual = ...;
+    //statusMsg(players);
+
+    // TODO Main game loop here
+
+
+    //gameOverMsg(players, aborted);
+
+
+    // ---- Logical methods -----------------
+       Player[] DiceResult(int i, int[] dice, Player[] player){  for (int index = 0; index < dice.length; index++) {
+      if (dice[index] == 1) {    // ett chip åt vänster
+          if (i == 0 ){
+              player[0].nChips = player[0].nChips - 1;
+              player[player.length - 1].nChips = player[player.length - 1].nChips + 1;
+          } else {
+              player[i].nChips = player[i].nChips - 1;
+              player[i - 1].nChips = player[i - 1].nChips + 1;
+          }
+      }
+      if (dice[index] == 2 && player[i].nChips>0) {
+          player[i].nChips = player[i].nChips - 1;
+      } // förlorar ett chip
+
+      if (dice[index] == 3 && player[i].nChips>0) { // ett chip åt höger
+          if (i == player.length - 1) {
+              player[0].nChips = player[0].nChips + 1;
+              player[player.length - 1].nChips = player[player.length - 1].nChips - 1;
+          } else {
+              player[i].nChips = player[i].nChips - 1;
+              player[i + 1].nChips = player[i + 1].nChips + 1;
+          }
+      }
+
+
+  }return player;
+
+       }
+
+    int DiceLength(Player[] player, int i){
+        int Dicelength=3;
+        if (player[i].nChips < 3){Dicelength=player[i].nChips;
+          }  return Dicelength;}
+
+
+       void CheckWinner(Player[] player){int nollor=0;
+           int p=0;
+       for(int index=0; index < player.length; index++){
+
+           if (player[index].nChips==0){nollor=nollor +1;}
+           if (player[index].nChips!=0){p=index;}
+           if((nollor==(player.length-1))){
+               out.println("");
+               out.println("");
+               out.println(" Winner is " + player[p].name);
+               out.println("");
+               out.println("");
+           }
+
+
+       }}
+
+          int rollDice() {
+        return rand.nextInt(6) + 1;}
+    Character[] TransDice(int[] dice) {
+        Character[] Transdice=new Character[dice.length];
+       for(int index=0; index < dice.length;index++ ){
+            if(dice[index]==1){Transdice[index]='L';}
+            if(dice[index]==2){Transdice[index]='C';}
+            if(dice[index]==3){Transdice[index]='R';}
+            if(dice[index]==4 || dice[index]==5 || dice[index]==6){Transdice[index]='¤';}
+
+        }
+        return Transdice;  }
+
+
+        // --- IO Methods -----------------------------------------
+
+        void gameStartMsg () {
+            out.println("LCR Game started");
+        }
+
+        Player[] getPlayers () {
+            out.print("How many chips per player? > ");
+            int nChips = sc.nextInt();
+            out.print("How many players? > ");
+            int nPlayers = sc.nextInt();
+            sc.nextLine();  // Read away \n
+            Player[] players = new Player[nPlayers];
+            out.println(players.length);
+            out.println(nPlayers);
+            for (int i = 0; i < players.length; i++) {
+                players[i] = new Player(); // allokerar player så vi kan använda
+            }
+
+            for (int i = 0; i < players.length; i++) {
+                out.println("insert name of player" + " " + (i + 1));
+                players[i].name = sc.nextLine();
+                players[i].nChips = nChips;
+
+
+            }
+
+            // TODO
+
+            return players;
+        }
+
+    void gameOverMsg(Player[] players, boolean aborted) {
+        if (aborted) {
+            out.println("Aborted");
+        } else {
+            int i = 0;
+            while (players[i].nChips == 0) {
+                i++;
+            }
+            out.println("Game over! Winner is " + players[i].name);
+        }
+    }
+
+    void roundMsg(String[] result) {
+        out.println(Arrays.toString(result));
+    }
+
+    void antalchips(Player[] player) {
+        for (int index = 0; index < player.length; index++) {
+            out.print(" " + player[index].name + " har " + player[index].nChips + " chips, ");
+        } // ger antal chips för varje spelare, baserat på klassen player }
+    }
+
+    void statusMsg(Player[] players) {
+        out.print("Status: ");
+        for (Player p : players) {
+            out.print(p.name + ": " + p.nChips + " ");
+        }
+        out.println();
+    }
+
+    String getCommand(Player actual) {
+        out.print("Player is " + actual.name + " > ");
+        return sc.nextLine();
+    }
+
+    // ------- Class to hold player data -----------
+
+    class Player {     // This makes it simpler to handle player data
+        String name;
+        int nChips;
+    }
+
+    //---------------- Testing ------------------------------
+
+    // To test we create (and print out) an expression that should be true!
+    // Tests should always be kept! Even if program finished. It's part of documentation
+    void test() {
+
+        // Test the dice
+        int d = rollDice();
+        out.println(1 <= d && d <= 6);   // Should print "true"
+        d = rollDice();
+        out.println(1 <= d && d <= 6);
+
+        // TODO
+
+
+        //exit(0);  // Will terminate program, *NEVER* use except here!
+    }
+}
+
+
+
